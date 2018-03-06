@@ -17,24 +17,26 @@ class AnomalyDetector():
     def __init__(self, path):
         preProcess = PreProcess()
         data = preProcess.pre_processing(path)
+        self.X = data
         self.sc = MinMaxScaler(feature_range = (0, 1))
-        self.X = self.sc.fit_transform(data)
+        self.X = self.sc.fit_transform(self.X)
+        print (self.X.shape)
         self.som = MiniSom(x = 10, y = 10, input_len = 93, sigma = 1.0, learning_rate = 0.5)
         
     def iterate_fit(self, num_iteration):
         self.som.random_weights_init(self.X)
         self.som.train_random(data = self.X, num_iteration = num_iteration)
+        print ("Completed Training")
 
 # Visualizing the results
     def plot_results(self):
         bone()
         pcolor(self.som.distance_map().T)
-        colorbar()
-        for i, x in enumerate(self.X):
-            w = self.som.winner(x)
-            plot(w[0] + 0.5,
-                 w[1] + 0.5
-                 )
+        # colorbar()
+        # for i, x in enumerate(self.X):
+        #     w = self.som.winner(x)
+        #     plot(w[0] + 0.5,
+        #          w[1] + 0.5)
         show()
     def reverse_mapping(self, cooridnates):
         mappings = self.som.win_map(self.X)
